@@ -1,0 +1,228 @@
+Premier tutoriel (page 32 du diaporama Spring Framework) avec Netbeans
+
+1. Créer un projet Maven->Java Application
+
+    File->New Project (Categories : Maven; Projets: Java Application)
+    
+    Project Name: le nom qu'on veut, par exemple, PremierTutoSpringFramework.
+    Project Location: <emplacement de son espace personnel>
+    Group Id: fr.miage
+
+2. Ajouter dans pom.xml
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.8.RELEASE</version>
+    </parent>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+
+    Netbeans propose d'utiliser la dernière version <version>1.5.8.RELEASE</version>
+    J'ai accepté (je ne sais pas si c'est bien)
+
+3. Créer une classe Application dans fr.miage.premiertutospringframework
+    Netbeans crée:
+        package fr.miage.premiertutospringframework;
+
+        public class Application {
+            
+        }
+
+4. Ajouter les anotations
+    a. @EnableAutoConfiguration
+       
+        Netbeans propose de faire l'import qu'on peut accepter
+       
+       Ou alors en utilisant la complétion automatique 
+       
+       @EnableAu<Ctrl-Espace> et Netbeans complète et rajoute l'import qui va bien.
+       
+    b. @ComponentScan
+    
+        Idem
+        
+5. Écrire le main de la classe Application
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+    
+    SpringApplication vient de org.springframework.boot, il faut, comme pour les annotations, accepter l'import proposé ou utiliser la complétion automatique.
+    
+6. Créer une classe contrôleur SampleController
+
+7. Ajouter à cette classe une annotation @SampleController
+
+8. Ajouter à cette classe la méthode suivante :
+
+    String hello() {
+        return "Bonjour tout le monde";
+    }
+    
+9. Ajoute à cette méthode les annotations
+    a. @RequestMapping("/hello") // Je comprends ce que ça fait
+    b. @ResponseBody // Je comprends moins
+
+Notre première application est prête. Il ne reste qu'à la lancer. Run->Application.java
+
+Pour vérifier :
+
+10. Taper l'url localhost:8080/hello dans un navigateur
+    Il devrait s'afficher 
+    Bonjour tout le monde
+    
+    Ça marche !
+    
+11. Par curiosité, changeons un peu la méthode hello() pour qu'elle retourne "<h1>Bonjour tout le monde</h1>"
+
+12. Arrêter le serveur (clic sur la croix dans la barre d'état Run (PremierTutoSpringFramework)
+
+13. Relancer le serveur Run->Application.java
+
+    Remarque, le démarrage à chaud semble ne pas fonctionner dans l'état actuel. Peut-être un problème de configuration dans String ?
+    
+    Résultat: j'obtiens le résultat espéré,  "Bonjour tout le monde" en titre de niveau 1
+    
+14. Par curiosité, je tape l'url localhost:8080 et j'obtiens
+
+    
+    Whitelabel Error Page
+
+    This application has no explicit mapping for /error, so you are seeing this as a fallback.
+    Fri Sep 07 13:45:05 CEST 2018
+    There was an unexpected error (type=Not Found, status=404).
+    No message available
+    
+    Normal, le mapping n'est pas fait pour /, mais il manque aussi sûrement un retour spécial dans le cas d'erreur 404, je ne sais encore pas comme faire.
+    
+    Néanmoins, je peux faire une page à la racine pour ça comme ceci:
+    
+15. Ajouter à SampleController la méthode
+
+    @RequestMapping("/")
+    @ResponseBody
+    String racine() {
+        return "<h1>Bienvenu sur votre premier site Spring</h1><p>Voici la seule page disponible (pour l'instant) </p><p><ul><li><a href=\"http://localhost:8080/hello\">hello</a>: une page polie</li></ul></p>";
+    }
+
+16. Arrêter et relancer le serveur puis tester l'url localhost:8080 
+
+    Ça donne le résultat attendu
+    
+    Bienvenu sur votre premier site Spring <En titre de niveau 1>
+
+    Voici la seule page disponible (pour l'instant)
+
+        - hello: une page polie <Avec hello cliquable et qui redirige vers /hello
+        
+Il n'est pas recommander de travailler ainsi:
+
+    - L'écriture de la page est malaisée 
+    - Le modèle MVC n'est pas respecté car la vue est faite dans le contrôleur.
+    
+Pour séparer, la vue du modèle, on peut utiliser un "composant" (je ne sais pas si j'emploie le bon terme) thymeleaf pour rediriger la réponse du contrôleur vers une vue.
+
+SECONDE PARTIE  
+
+1. Ouvrir le projet PremierTutoSpringframework
+
+2. Ajouter dans la classe SampleController
+
+    @RequestMapping("/greeting")
+    public String greeting(@RequestParam(value = "name", required = false, defaultValue = "World") String name, Model model) {
+        model.addAttribute("name", name);
+        return "greeting";
+    }
+    
+   et accepter les imports proposés par Netbeans ou les obtenir grâce à la complétion automatique. 
+    
+    Le but est de créer une nouvelle url (/greeting) et d'associer sa réponse à une page html fabriquée grâce à thymeleaf
+    
+    Contrairement aux méthodes précédentes (racine() et hello(), greeting() est munie de deux paramètres, name et model
+    
+    Par ailleurs, name est annoté par @RequestParam(value = "name", required = false, defaultValue = "World"). Je suppose que la méthode HTTP par défaut est GET
+    
+    Les info (value = "name", required = false, defaultValue = "Tout le monde") sont assez claires :
+        - le nom d'un paramètre de GET est name
+        - sa présence n'est pas requise
+        - en cas d'absence, sa valeur est "World"
+        
+    model sera expliqué par la suite.
+
+4. Arrêter et relancer le serveur puis tester l'url localhost:8080/greeting
+
+    On obtient le message d'erreur suivant:
+    
+        Whitelabel Error Page
+
+            This application has no explicit mapping for /error, so you are seeing this as a fallback.
+            Fri Sep 07 14:50:16 CEST 2018
+            There was an unexpected error (type=Internal Server Error, status=500).
+            Circular view path [greeting]: would dispatch back to the current handler URL [/greeting] again. Check your ViewResolver setup! (Hint: This may be the result of an unspecified view, due to default view name generation.)
+            
+    C'est normal car cette fois le retour de greeting(), qui est "greeting", ne sera pas dans le Body de la réponse HTTP (je ne sais pas si ce que je dis est juste. Mais si oui, je viens de comprendre ce que @ResponseBody signifie) mais représente un fichier  "greeting.html" (en revanche, ceci reste obscur car aucune annotation ne le précise, est-ce-par défaut ?). Par ailleurs un objet Model est créé quelque par le "cloud Spring". Il contient des paramètres pour afficher la vue, en l'occurrence le nom de la personne à saluer.
+    
+5. Créer l'emplacement pour ranger greeting.html
+
+    Spring va le chercher dans le dossier src/main/resources/templates
+    Pour faire ça, je n'ai pour l'instant rien trouvé de mieux que :
+    
+    Dans Netbeans, 
+        a. sélectionner l'onglet file
+        b. sélectionner main
+        c. clic droit->new folder->"resources"
+        d. sélectionner resources
+        c. clic droit->new folder->"templates"
+        
+    Cette fois, dans "Projects" apparaît un dossier Other Sources avec notre dossier templates.
+    
+6. Depuis Projects, sélectionner templates et créer un fichier "greeting.html" 
+
+    Essayons pour voir. L'url localhost:8080/greeting donne toujours la même erreur. 
+    
+    Après quelques recherche, ça semble normal, car il manque "thymeleaf". Il faut ajouter cette dépendance.
+    
+7. Dans le fichier pom.xml, ajouter 
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+8. Refaire un "build with dependencies"
+
+9. Cette l'url localhost:8080/greeting donne "TODO write content". Ok, c'est que qu'on veut.
+
+   Il reste à faire ce qui est demandé, écrire dans greeting.hmtl le texte qu'on veut en utilisant thymeleaf pour paramétrer la construction de la page.
+
+10. Remplacer le "body" du fichier greeting.html par <p th:text="'Bonjour ' + ${name} + ' !' "></p> (remarque, un peu mieux que <p th:text="'Bonjour ' + ${name} + ' !' "/> car le parser semble sensible à ça).
+
+    Netbeans affiche des erreurs car th:text n'est pas reconnu comme attribut de <p>. C'est en fait utilisé par thymeleaf qui va écrire ce texte en remplaçant ${name} par sa valeur envoyée dans model.    
+            
+11. Arrêter et relancer le serveur puis tester l'url localhost:8080/greeting
+
+    Bonjour tout le monde ! 
+    
+    <Pas de paramètre name, donc sa valeur est "Tout le monde".>
+    
+12. Taper l'url localhost:8080/greeting?name=Machin
+
+    Bonjour Machin
+    
+    ...
+    
+13. Remarque: on aurait pu écrire <h1 th:text="'Bonjour ' + ${name} + ' !' "></h1>    
+    
+Fin de cette partie. Dans quelque temps, la suite, c'est-à-dire le formulaire.    
+
+    
+
+    
+    
+    
+    
