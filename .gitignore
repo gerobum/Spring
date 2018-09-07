@@ -58,4 +58,7 @@ captures/
 *.jks
 /M2/ComplementsJava/Corrections/05-StopWatch/nbproject/private/
 /L3/Java/Corrections/08-Redefinition-Des-Methodes-De-Objects/CorrectionExoRedefinitionObjet/nbproject/private/
+<<<<<<< HEAD
 /PremierTutoSpringFramework/target/
+=======
+>>>>>>> bef8317d49e4bf31df12a80dd26c0dcf51e11a5d
