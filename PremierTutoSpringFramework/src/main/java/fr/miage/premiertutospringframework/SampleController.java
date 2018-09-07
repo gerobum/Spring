@@ -19,9 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class SampleController {
 
     @RequestMapping("/")
-    @ResponseBody
-    String racine() {
-        return "<h1>Bienvenu sur votre premier site Spring</h1><p>Voici la seule page disponible (pour l'instant) </p><p><ul><li><a href=\"http://localhost:8080/hello\">hello</a>: une page polie</li></ul></p>";
+    public String racine() {
+        return "racine";
     }
 
     @RequestMapping("/hello")
