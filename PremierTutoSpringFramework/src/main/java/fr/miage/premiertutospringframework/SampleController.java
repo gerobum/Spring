@@ -48,4 +48,15 @@ public class SampleController {
     public String greetingSubmit(@ModelAttribute Greeting greeting) {
         return "result";
     }
+    
+        @GetMapping("/id")
+    public String idForm(Model model) {
+        model.addAttribute("id", new Id());
+        return "id";
+    }
+
+    @PostMapping("/id")
+    public String idSubmit(@ModelAttribute Id id) {
+        return "idResult";
+    }
 }
