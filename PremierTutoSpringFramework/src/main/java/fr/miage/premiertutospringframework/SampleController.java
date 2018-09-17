@@ -5,8 +5,10 @@
  */
 package fr.miage.premiertutospringframework;
 
+import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,8 +50,8 @@ public class SampleController {
     public String greetingSubmit(@ModelAttribute Greeting greeting) {
         return "result";
     }
-    
-        @GetMapping("/id")
+
+    @GetMapping("/id")
     public String idForm(Model model) {
         model.addAttribute("id", new Id());
         return "id";
@@ -58,5 +60,20 @@ public class SampleController {
     @PostMapping("/id")
     public String idSubmit(@ModelAttribute Id id) {
         return "idResult";
+    }
+
+    @GetMapping("/nomage")
+    public String nomAgeForm(Model model) {
+        model.addAttribute("nomage", new NomAge());
+        return "nomage";
+    }
+
+    @PostMapping("/nomage")
+    public String nomAgeSubmit(Model model, @ModelAttribute("nomage") @Valid NomAge nomage, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "nomage";
+        }
+        model.addAttribute("nomage", nomage);
+        return "nomageResult";
     }
 }
